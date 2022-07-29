@@ -51,3 +51,12 @@ rm -rf app
 # copy your app over
 cp -R ../my-old-remix-app/app app
 ```
+
+## Features
+
+- Auth
+  - Login
+  - Sign Up
+  - Logout
+- Upload Video
+- Live Video to any RTMPS server

@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { MantineProvider } from "@mantine/core";
-// import { StylesPlaceholder } from "@mantine/remix";
+import { StylesPlaceholder } from "@mantine/remix";
 import { theme } from "./theme";
 
 export const meta: MetaFunction = () => ({
@@ -24,7 +24,7 @@ export default function App() {
         <head>
           <Meta />
           <Links />
-          {/* <StylesPlaceholder /> */}
+          <StylesPlaceholder />
         </head>
         <body>
           <Outlet />

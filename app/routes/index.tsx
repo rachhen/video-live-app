@@ -2,14 +2,20 @@ import { Button } from "@mantine/core";
 import { json } from "@remix-run/node";
 
 import type { LoaderFunction } from "@remix-run/node";
+import { Layout } from "~/components";
+import { authenticator } from "~/services/auth.server";
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  await authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+
   return json({});
 };
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <Layout>
       <h1>Welcome to Remix</h1>
       <Button>Settings</Button>
       <ul>
@@ -37,6 +43,6 @@ export default function Index() {
           </a>
         </li>
       </ul>
-    </div>
+    </Layout>
   );
 }
