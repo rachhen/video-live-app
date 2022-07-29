@@ -1,18 +1,17 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState } from "react";
 import { createStyles, Navbar, Group, Code } from "@mantine/core";
 import {
-  IconBellRinging,
   IconFingerprint,
   IconKey,
   IconSettings,
   Icon2fa,
   IconDatabaseImport,
-  IconReceipt2,
   IconLogout,
+  IconCloudUpload,
+  IconBroadcast,
 } from "@tabler/icons";
 import { MantineLogo } from "@mantine/ds";
-import { useFetcher } from "@remix-run/react";
+import { NavLink, useFetcher } from "@remix-run/react";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -93,35 +92,30 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 const data = [
-  { link: "", label: "Notifications", icon: IconBellRinging },
-  { link: "", label: "Billing", icon: IconReceipt2 },
-  { link: "", label: "Security", icon: IconFingerprint },
-  { link: "", label: "SSH Keys", icon: IconKey },
-  { link: "", label: "Databases", icon: IconDatabaseImport },
-  { link: "", label: "Authentication", icon: Icon2fa },
-  { link: "", label: "Other Settings", icon: IconSettings },
+  { link: "/upload", label: "Upload", icon: IconCloudUpload },
+  { link: "/streaming", label: "Streaming", icon: IconBroadcast },
+  { link: "/Security", label: "Security", icon: IconFingerprint },
+  { link: "/ssh", label: "SSH Keys", icon: IconKey },
+  { link: "/databases", label: "Databases", icon: IconDatabaseImport },
+  { link: "/authentication", label: "Authentication", icon: Icon2fa },
+  { link: "/settings", label: "Other Settings", icon: IconSettings },
 ];
 
 export function MyNavbar() {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState("Billing");
   const fetcher = useFetcher();
 
   const links = data.map((item) => (
-    <a
-      className={cx(classes.link, {
-        [classes.linkActive]: item.label === active,
-      })}
-      href={item.link}
+    <NavLink
+      to={item.link}
       key={item.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActive(item.label);
+      className={({ isActive }) => {
+        return cx(classes.link, { [classes.linkActive]: isActive });
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
-    </a>
+    </NavLink>
   ));
 
   return (

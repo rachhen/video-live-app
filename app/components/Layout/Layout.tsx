@@ -1,8 +1,12 @@
 import type { FC } from "react";
-import { AppShell } from "@mantine/core";
+import { AppShell, Title } from "@mantine/core";
 import { MyNavbar } from "./MyNavbar";
 
-export const Layout: FC = ({ children }) => {
+type Props = {
+  title?: string;
+};
+
+export const Layout: FC<Props> = ({ title, children }) => {
   return (
     <AppShell
       padding="md"
@@ -21,6 +25,7 @@ export const Layout: FC = ({ children }) => {
         },
       })}
     >
+      <Title pb="lg">{title}</Title>
       {children}
     </AppShell>
   );
