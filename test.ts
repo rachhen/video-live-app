@@ -1,7 +1,7 @@
 import ffmpeg from "fluent-ffmpeg";
 
 // ffmpeg -re -y -i source.mp4 -c:a copy -ac 1 -ar 44100 -b:a 96k -vcodec libx264 -pix_fmt yuv420p -vf scale=1080:-1 -r 30 -g 60 -tune zerolatency -f flv -maxrate 2000k -preset veryfast "rtmps://live-api-s.facebook.com:443/rtmp/FB-778095353621857-0-AbzVlwh1th8pcDBJ"
-ffmpeg("./source.mp4")
+ffmpeg("https://www.w3schools.com/tags/movie.mp4") //("./source.mp4")
   .inputOptions("-re")
   .inputOptions("-y")
   .inputOption("-stream_loop", "-1")

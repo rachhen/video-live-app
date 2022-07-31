@@ -5,5 +5,5 @@ import { useIsSubmitting } from "remix-validated-form";
 export const SubmitButton = (props: ButtonProps) => {
   const isSubmitting = useIsSubmitting();
 
-  return <Button {...props} loading={isSubmitting} />;
+  return <Button type="submit" {...props} loading={isSubmitting} />;
 };
