@@ -1,17 +1,6 @@
 version: "3.9"
 
 services:
-  mongodb:
-    image: mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - cache:/data/db
-
   redis:
     image: redis:7.0.4-alpine
     restart: always
@@ -19,6 +8,15 @@ services:
       - "6379:6379"
     volumes:
       - cache:/data
+
+  mongodb:
+    # This image automatically creates a replica set required for transactions
+    image: prismagraphql/mongo-single-replica:4.4.3-bionic
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: prisma
+    ports:
+      - 27017:27017
 
 volumes:
   cache:

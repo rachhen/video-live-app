@@ -21,26 +21,30 @@ authenticator.use(
       throw new Error("Invalid credentials");
     }
 
-    const user = await getUserByEmail(result.data.email);
+    try {
+      const user = await getUserByEmail(result.data.email);
 
-    if (!user) {
+      if (!user) {
+        throw new Error("Invalid credentials");
+      }
+
+      const isMatch = await compare(result.data.password, user.password);
+
+      if (!isMatch) {
+        throw new Error("Invalid credentials");
+      }
+
+      const {
+        password: _,
+        verifyToken: __,
+        resetPasswordToken: ___,
+        ...rest
+      } = user;
+
+      return rest as User;
+    } catch (error) {
       throw new Error("Invalid credentials");
     }
-
-    const isMatch = await compare(result.data.password, user.password);
-
-    if (!isMatch) {
-      throw new Error("Invalid credentials");
-    }
-
-    const {
-      password: _,
-      verifyToken: __,
-      resetPasswordToken: ___,
-      ...rest
-    } = user;
-
-    return rest as User;
   }),
   "user-pass"
 );
