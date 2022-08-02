@@ -1,11 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { createStyles, Navbar, Group, Code } from "@mantine/core";
 import {
-  IconFingerprint,
-  IconKey,
-  IconSettings,
-  Icon2fa,
-  IconDatabaseImport,
   IconLogout,
   IconCloudUpload,
   IconBroadcast,
@@ -94,11 +89,6 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const data = [
   { link: "/upload", label: "Upload", icon: IconCloudUpload },
   { link: "/streaming", label: "Streaming", icon: IconBroadcast },
-  { link: "/Security", label: "Security", icon: IconFingerprint },
-  { link: "/ssh", label: "SSH Keys", icon: IconKey },
-  { link: "/databases", label: "Databases", icon: IconDatabaseImport },
-  { link: "/authentication", label: "Authentication", icon: Icon2fa },
-  { link: "/settings", label: "Other Settings", icon: IconSettings },
 ];
 
 export function MyNavbar() {
