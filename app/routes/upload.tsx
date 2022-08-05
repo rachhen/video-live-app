@@ -1,11 +1,27 @@
 import { useState } from "react";
 import { json } from "@remix-run/node";
-import type { ActionFunction, MetaFunction } from "@remix-run/node";
-import { SimpleGrid, Image, Modal, Pagination, Stack } from "@mantine/core";
-import { Link, Outlet, useFetcher, useNavigate } from "@remix-run/react";
+import { validationError } from "remix-validated-form";
+import { SimpleGrid, Modal, Pagination, Stack } from "@mantine/core";
+import type {
+  ActionFunction,
+  MetaFunction,
+  LoaderFunction,
+} from "@remix-run/node";
+import {
+  Link,
+  Outlet,
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
+
 import { Layout } from "~/components/Layout";
 import { UploadDropzone } from "~/features/Upload";
 import { fileUpload } from "~/utils/file-upload.server";
+import { uploadValidator } from "~/schemas/upload";
+import { prisma } from "~/services/db.server";
+import { authenticator } from "~/services/auth.server";
+import type { FileUpload } from "~/models/fileUpload.server";
 
 export const meta: MetaFunction = () => {
   return {
@@ -16,22 +32,45 @@ export const meta: MetaFunction = () => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const user = await authenticator.isAuthenticated(request.clone());
   const formData = await fileUpload(request);
 
-  console.log(formData.get("files"));
+  const result = await uploadValidator.validate(formData);
 
-  return json({});
+  if (result.error) return validationError(result.error);
+
+  const file = await prisma.fileUpload.create({
+    data: {
+      name: result.data.file.name,
+      type: result.data.file.type,
+      path: result.data.file.name,
+      size: result.data.file.size,
+      userId: user!.id,
+    },
+  });
+
+  return json(file);
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  await authenticator.isAuthenticated(request);
+
+  const files = await prisma.fileUpload.findMany();
+
+  return json(files);
 };
 
 function Upload() {
-  const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
+  const navigate = useNavigate();
   const fetcher = useFetcher();
+  const files = useLoaderData<FileUpload[]>();
 
   const onDrop = (files: File[]) => {
     const formData = new FormData();
+
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("file", file);
     });
 
     fetcher.submit(formData, {
@@ -40,22 +79,25 @@ function Upload() {
     });
   };
 
-  console.log(fetcher.state);
+  const isSubmiting = fetcher.state === "submitting";
 
   return (
     <Layout title="Media Library">
-      <UploadDropzone onDrop={onDrop} />
+      <UploadDropzone onDrop={onDrop} loading={isSubmiting} />
       <Stack>
         <SimpleGrid cols={5} mt="lg">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-            <Link key={i} to={`/upload/${i}`} onClick={() => setOpened(true)}>
-              <Image
-                src={`https://picsum.photos/id/${i}/200/300`}
-                alt="random image"
+          {files.map((item) => (
+            <Link
+              key={item.id}
+              to={`/upload/${item.id}`}
+              onClick={() => setOpened(true)}
+            >
+              <video
+                src={`/uploads/${item.path}`}
                 height={200}
-                fit="cover"
-                radius="sm"
-                withPlaceholder
+                // fit="cover"
+                // radius="sm"
+                // withPlaceholder
               />
             </Link>
           ))}

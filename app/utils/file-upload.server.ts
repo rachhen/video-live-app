@@ -1,13 +1,15 @@
+import path from "path";
+import { randomBytes } from "crypto";
 import {
   unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node"; // or cloudflare/deno
 import slugify from "slugify";
-import path from "path";
-import { randomBytes } from "crypto";
+
+export const directory = "public/uploads";
 
 export const uploadHandler = unstable_createFileUploadHandler({
-  directory: "public/uploads",
+  directory,
   maxPartSize: 1073741824,
   file: (args) => {
     const slug = slugify(args.filename, { lower: true });

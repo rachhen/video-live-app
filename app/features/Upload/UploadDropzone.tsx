@@ -9,7 +9,8 @@ export function UploadDropzone(props: Omit<DropzoneProps, "children">) {
   return (
     <Dropzone
       onReject={(files) => console.log("rejected files", files)}
-      maxSize={1048576}
+      multiple={false}
+      accept={["video/*"]}
       {...props}
     >
       <Group
