@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs/promises";
 import { randomBytes } from "crypto";
 import {
   unstable_createFileUploadHandler,
@@ -21,4 +22,8 @@ export const uploadHandler = unstable_createFileUploadHandler({
 
 export const fileUpload = (request: Request) => {
   return unstable_parseMultipartFormData(request, uploadHandler);
+};
+
+export const deleteFile = (filePath: string) => {
+  return fs.unlink(`${directory}/${filePath}`);
 };

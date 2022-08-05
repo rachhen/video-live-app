@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useActionData } from "@remix-run/react";
+import { Link, useActionData, useSearchParams } from "@remix-run/react";
 import { AuthorizationError } from "remix-auth";
 import { ValidatedForm } from "remix-validated-form";
 import { FormInput, FormPasswordInput, SubmitButton } from "~/components/Form";
@@ -19,8 +19,16 @@ import { authenticator } from "~/services/auth.server";
 
 export const action: ActionFunction = async ({ request }) => {
   try {
+    const form = await request.clone().formData();
+    const redirectTo = form.get("redirectTo");
+
+    let successRedirect = "/";
+    if (redirectTo && typeof redirectTo === "string") {
+      successRedirect = redirectTo;
+    }
+
     return await authenticator.authenticate("user-pass", request, {
-      successRedirect: "/",
+      successRedirect,
       throwOnError: true,
     });
   } catch (error) {
@@ -42,9 +50,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 function Login() {
   const actionData = useActionData();
+  const [searchParams] = useSearchParams();
 
   return (
     <ValidatedForm validator={loginValidator} method="post">
+      <input
+        type="hidden"
+        name="redirectTo"
+        value={searchParams.get("redirectTo") ?? undefined}
+      />
       <Container size={420} my={40}>
         <Title
           align="center"

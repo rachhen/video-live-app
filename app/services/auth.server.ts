@@ -49,6 +49,14 @@ authenticator.use(
   "user-pass"
 );
 
+export const isAuthenticated = (request: Request) => {
+  const redirectTo = new URL(request.url).pathname;
+  const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+  return authenticator.isAuthenticated(request, {
+    failureRedirect: `/login?${searchParams}`,
+  });
+};
+
 export const createUser = async (input: RegisterInput) => {
   const userExist = await getUserByEmail(input.email);
 
