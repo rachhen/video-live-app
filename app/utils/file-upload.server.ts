@@ -20,7 +20,7 @@ export const uploadHandler = unstable_createFileUploadHandler({
   },
 });
 
-export const fileUpload = (request: Request) => {
+export const fileUpload = (request: Request): Promise<FormData> => {
   return unstable_parseMultipartFormData(request, uploadHandler);
 };
 

@@ -6,6 +6,8 @@ import {
   Pagination,
   Stack,
   AspectRatio,
+  Paper,
+  Text,
 } from "@mantine/core";
 import type {
   ActionFunction,
@@ -19,15 +21,17 @@ import {
   useLoaderData,
   useNavigate,
   useParams,
+  useSearchParams,
 } from "@remix-run/react";
 
+import Asset from "~/models/asset.server";
 import type { FindAllAsset } from "~/models/asset.server";
 import { Layout } from "~/components/Layout";
 import { UploadDropzone } from "~/features/Upload";
 import { fileUpload } from "~/utils/file-upload.server";
 import { uploadValidator } from "~/schemas/upload";
 import { isAuthenticated } from "~/services/auth.server";
-import Asset from "~/models/asset.server";
+import { pagiatedValidator } from "~/schemas/paginated";
 
 export const meta: MetaFunction = () => {
   return {
@@ -57,9 +61,13 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
   const user = await isAuthenticated(request);
+  const result = await pagiatedValidator.validate(url.searchParams);
 
-  const files = await Asset.findAll(user.id);
+  if (result.error) return validationError(result.error);
+
+  const files = await Asset.findAll(user.id, result.data);
 
   return json(files);
 };
@@ -67,8 +75,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 function Upload() {
   const navigate = useNavigate();
   const fetcher = useFetcher();
-  const files = useLoaderData<FindAllAsset>();
   const params = useParams();
+  const [searchParams] = useSearchParams();
+  const { data: files, total } = useLoaderData<FindAllAsset>();
 
   const onDrop = (files: File[]) => {
     const formData = new FormData();
@@ -83,8 +92,14 @@ function Upload() {
     });
   };
 
-  const isSubmiting = fetcher.state === "submitting";
   const isOpen = !!params.id;
+  const isSubmiting = fetcher.state === "submitting";
+  const page = +(searchParams.get("page") ?? "1");
+
+  const linkTo = (id: string) =>
+    searchParams.get("page")
+      ? `/upload/${id}?page=${searchParams.get("page")}`
+      : `/upload/${id}`;
 
   return (
     <Layout title="Media Library">
@@ -92,23 +107,35 @@ function Upload() {
       <Stack>
         <SimpleGrid cols={5} mt="lg">
           {files.map((item) => (
-            <Link key={item.id} to={`/upload/${item.id}`}>
+            <Paper
+              withBorder
+              key={item.id}
+              component={Link}
+              to={linkTo(item.id)}
+            >
               <AspectRatio ratio={16 / 9}>
                 <video src={`/uploads/${item.path}`} />
               </AspectRatio>
-            </Link>
+              <Text p="xs" size="sm">
+                {item.name}
+              </Text>
+            </Paper>
           ))}
         </SimpleGrid>
-        <Pagination page={1} total={10} />
+        <Pagination
+          total={total}
+          page={page}
+          onChange={(page) => navigate(`/upload?page=${page}`)}
+        />
       </Stack>
       <Modal
         size="xl"
         centered
         opened={isOpen}
         onClose={() => {
-          navigate("/upload");
+          navigate(-1);
         }}
-        title="Introduce yourself!"
+        title="Video Preview"
       >
         <Outlet />
       </Modal>

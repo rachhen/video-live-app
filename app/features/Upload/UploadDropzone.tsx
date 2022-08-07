@@ -42,10 +42,10 @@ export function UploadDropzone(props: Omit<DropzoneProps, "children">) {
 
         <div>
           <Text size="xl" inline>
-            Drag images here or click to select files
+            Drag video here or click to select video
           </Text>
           <Text size="sm" color="dimmed" inline mt={7}>
-            Attach as many files as you like, each file should not exceed 5mb
+            Attach as many videos as you like, each file should not exceed 5gb
           </Text>
         </div>
       </Group>
