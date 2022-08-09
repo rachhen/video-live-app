@@ -1,19 +1,19 @@
 import ffmpeg from "fluent-ffmpeg";
 
 // ffmpeg -re -y -i source.mp4 -c:a copy -ac 1 -ar 44100 -b:a 96k -vcodec libx264 -pix_fmt yuv420p -vf scale=1080:-1 -r 30 -g 60 -tune zerolatency -f flv -maxrate 2000k -preset veryfast "rtmps://live-api-s.facebook.com:443/rtmp/FB-778095353621857-0-AbzVlwh1th8pcDBJ"
-ffmpeg("https://www.w3schools.com/tags/movie.mp4") //("./source.mp4")
+ffmpeg("public/uploads/life-is-strange-d7c337c569.mp4") //("./source.mp4")
   .inputOptions("-re")
   .inputOptions("-y")
   .inputOption("-stream_loop", "-1")
-  .size("1080x?")
+  // .size("1280x720")
   .audioCodec("libmp3lame")
   .audioCodec("copy")
   .audioChannels(2)
   .audioBitrate(128)
   .videoCodec("libx264")
-  .videoBitrate(1024)
+  .videoBitrate(600)
   .addOption("-pix_fmt", "yuv420p")
-  .addOption("-vf", "scale=1080:-1")
+  .addOption("-vf", "scale=640x360")
   .addOption("-r", "30")
   .addOption("-g", "60")
   .addOption("-tune", "zerolatency")
@@ -21,7 +21,7 @@ ffmpeg("https://www.w3schools.com/tags/movie.mp4") //("./source.mp4")
   .addOption("-maxrate", "2000k")
   .addOption("-preset", "veryfast")
   .output(
-    "rtmps://live-api-s.facebook.com:443/rtmp/FB-778095353621857-0-AbzVlwh1th8pcDBJ",
+    "rtmps://live-api-s.facebook.com:443/rtmp/FB-786721242759268-0-AbzaFpaTfRRvqrKk",
     { end: true }
   )
   .on("start", function (commandLine) {
