@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Stack } from "@mantine/core";
 import type { ActionFunction, MetaFunction } from "@remix-run/node";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -9,6 +9,7 @@ import { streamingValidator } from "~/schemas/streaming";
 import { SelectFile } from "~/features/Streaming";
 import { isAuthenticated } from "~/services/auth.server";
 import { streamingQueue } from "~/queues/streaming.server";
+import { loops } from "~/constants/loop";
 
 export const meta: MetaFunction = () => ({
   title: "Streaming",
@@ -25,21 +26,17 @@ export const action: ActionFunction = async ({ request }) => {
 
   const streaming = await Streaming.create(user.id, result.data);
 
-  await streamingQueue.add("streaming", streaming);
+  await streamingQueue.add("streaming", streaming, { jobId: streaming.id });
 
-  return json(streaming);
+  return redirect("/streaming?created=true");
 };
-
+// https://web.facebook.com/business/help/162540111070395?id=1123223941353904&_rdc=1&_rdr
 function NewStreaming() {
-  const loops = [
-    { value: "0", label: "No Loop" },
-    { value: "1", label: "Loop 1 time" },
-    { value: "2", label: "Loop 2 times" },
-    { value: "3", label: "Loop 3 times" },
-    { value: "5", label: "Loop 5 times" },
-    { value: "7", label: "Loop 7 times" },
-    { value: "10", label: "Loop 10 times" },
-    { value: "-1", label: "Loop forever" },
+  const resolutions = [
+    { label: "1080p", value: "1080p" },
+    { label: "720p", value: "720p" },
+    { label: "480p", value: "480p" },
+    { label: "360p", value: "360p" },
   ];
 
   return (
@@ -47,8 +44,7 @@ function NewStreaming() {
       validator={streamingValidator}
       method="post"
       defaultValues={{
-        rtmps:
-          "rtmps://live-api-s.facebook.com:443/rtmp/FB-780484060049653-0-AbwnQDSzUYWxNM61",
+        rtmps: "rtmps://live-api-s.facebook.com:443/rtmp/",
       }}
     >
       <Stack>
@@ -59,6 +55,13 @@ function NewStreaming() {
           label="RTMP link"
           autoComplete="off"
           description="Example: rtmp(s)://<domain>/<streamkey>"
+        />
+        <FormSelect
+          name="resolution"
+          label="Resolution"
+          defaultValue={resolutions[0].value}
+          data={resolutions}
+          styles={{ root: { width: 150 } }}
         />
         <FormSelect
           name="loop"

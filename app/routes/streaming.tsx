@@ -1,7 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Paper } from "@mantine/core";
-import { Layout } from "~/components";
-import { Outlet } from "@remix-run/react";
+import { Paper, Notification } from "@mantine/core";
+import { Outlet, useNavigate, useSearchParams } from "@remix-run/react";
+import { IconCheck } from "@tabler/icons";
+
+import { Layout } from "~/components/Layout";
 
 export const meta: MetaFunction = () => ({
   title: "Streaming",
@@ -10,9 +12,22 @@ export const meta: MetaFunction = () => ({
 });
 
 function Streaming() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   return (
     <Layout title="Streaming">
-      <Paper withBorder p="md">
+      {searchParams.get("created") && (
+        <Notification
+          icon={<IconCheck size={18} />}
+          color="teal"
+          title="Success!"
+          onClose={() => navigate("/streaming")}
+        >
+          Streaming has been created.
+        </Notification>
+      )}
+      <Paper withBorder p="md" mt="md">
         <Outlet />
       </Paper>
     </Layout>

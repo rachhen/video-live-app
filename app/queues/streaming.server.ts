@@ -1,9 +1,10 @@
-import type { Streaming } from "@prisma/client";
+import type { QueueData } from "~/services/ffmpeg.server";
+import { createLiveStream } from "~/services/ffmpeg.server";
 import { Queue } from "~/utils/queue.server";
 
-export const streamingQueue = Queue<Streaming>(
+export const streamingQueue = Queue<QueueData>(
   "streamingQueue",
   async (job) => {
-    console.log("Streaming job", job.data);
+    await createLiveStream(job.data);
   }
 );

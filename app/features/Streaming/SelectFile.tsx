@@ -12,22 +12,23 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useFetcher } from "@remix-run/react";
-import { useField } from "remix-validated-form";
+import { useControlField, useField } from "remix-validated-form";
 
-import type { FindAllAsset } from "~/models/asset.server";
 import type { Asset } from "@prisma/client";
+import type { FindAllAsset } from "~/models/asset.server";
 
 type SelectFileProps = {
   name: string;
 };
 
 export function SelectFile({ name }: SelectFileProps) {
-  const { error, getInputProps } = useField(name);
+  const fetcher = useFetcher<FindAllAsset>();
   const [page, setPage] = useState(1);
   const [opened, handlers] = useDisclosure(false);
-  const fetcher = useFetcher<FindAllAsset>();
   const [tmp, setTmp] = useState<Asset | undefined>();
   const [selected, setSelected] = useState<Asset | undefined>();
+  const { error, getInputProps } = useField(name);
+  const [value, setValue] = useControlField<string>(name);
   const { classes, cx } = useStyles();
 
   useEffect(() => {
@@ -36,11 +37,9 @@ export function SelectFile({ name }: SelectFileProps) {
     }
   }, [fetcher]);
 
-  const input = getInputProps();
-
   return (
     <div>
-      <input type="hidden" {...input} />
+      <input type="hidden" {...getInputProps({ id: name, value })} />
       <Modal
         opened={opened}
         onClose={() => handlers.close()}
@@ -79,8 +78,8 @@ export function SelectFile({ name }: SelectFileProps) {
             <Button
               onClick={() => {
                 if (tmp) {
-                  input.onChange?.(tmp.id);
                   setSelected(tmp);
+                  setValue(tmp.id);
                   handlers.close();
                 }
               }}
