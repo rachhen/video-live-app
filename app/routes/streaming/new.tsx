@@ -26,12 +26,16 @@ export const action: ActionFunction = async ({ request }) => {
 
   const streaming = await Streaming.create(user.id, result.data);
 
-  await streamingQueue.add("streaming", streaming, { jobId: streaming.id });
+  await streamingQueue.add("streaming", streaming, {
+    attempts: 0,
+    jobId: streaming.id,
+    removeOnComplete: true,
+    removeOnFail: true,
+  });
 
   return redirect("/streaming?created=true");
 };
 
-// https://web.facebook.com/business/help/162540111070395?id=1123223941353904&_rdc=1&_rdr
 function NewStreaming() {
   return (
     <ValidatedForm

@@ -1,4 +1,5 @@
 import path from "path";
+import { constants } from "fs";
 import fs from "fs/promises";
 import { randomBytes } from "crypto";
 import {
@@ -24,6 +25,19 @@ export const fileUpload = (request: Request): Promise<FormData> => {
   return unstable_parseMultipartFormData(request, uploadHandler);
 };
 
-export const deleteFile = (filePath: string) => {
-  return fs.unlink(`${directory}/${filePath}`);
+export const deleteFile = async (filePath: string) => {
+  const file = `${directory}/${filePath}`;
+
+  return checkFileExist(file).then((exists) => {
+    if (exists) {
+      return fs.unlink(file);
+    }
+  });
 };
+
+async function checkFileExist(file: string) {
+  return fs
+    .access(file, constants.F_OK)
+    .then(() => true)
+    .catch(() => false);
+}
