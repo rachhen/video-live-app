@@ -9,6 +9,7 @@ const create = (userId: string, input: StreamingInput) => {
       name: input.name,
       rtmps: input.rtmps,
       loop: input.loop,
+      resolution: input.resolution,
       user: { connect: { id: userId } },
       asset: { connect: { id: input.videoId } },
     },

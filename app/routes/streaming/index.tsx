@@ -75,23 +75,26 @@ function StreamingPage() {
               </td>
               <td>{dateFormat(item.createdAt)}</td>
               <td>
-                <ActionIcon
-                  size="xs"
-                  color="red"
-                  onClick={() => {
-                    if (confirm("Are you sure?")) {
-                      fetcher.submit(
-                        {},
-                        {
-                          action: `/streaming/${item.id}`,
-                          method: "delete",
-                        }
-                      );
-                    }
-                  }}
-                >
-                  <IconTrash />
-                </ActionIcon>
+                <Stack>
+                  <Link to={`${item.id}`}>View</Link>
+                  <ActionIcon
+                    size="xs"
+                    color="red"
+                    onClick={() => {
+                      if (confirm("Are you sure?")) {
+                        fetcher.submit(
+                          {},
+                          {
+                            action: `/streaming/${item.id}`,
+                            method: "delete",
+                          }
+                        );
+                      }
+                    }}
+                  >
+                    <IconTrash />
+                  </ActionIcon>
+                </Stack>
               </td>
             </tr>
           ))}

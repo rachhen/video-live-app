@@ -9,7 +9,7 @@ import { streamingValidator } from "~/schemas/streaming";
 import { SelectFile } from "~/features/Streaming";
 import { isAuthenticated } from "~/services/auth.server";
 import { streamingQueue } from "~/queues/streaming.server";
-import { loops } from "~/constants/loop";
+import { loops, resolutions } from "~/constants";
 
 export const meta: MetaFunction = () => ({
   title: "Streaming",
@@ -30,15 +30,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   return redirect("/streaming?created=true");
 };
+
 // https://web.facebook.com/business/help/162540111070395?id=1123223941353904&_rdc=1&_rdr
 function NewStreaming() {
-  const resolutions = [
-    { label: "1080p", value: "1080p" },
-    { label: "720p", value: "720p" },
-    { label: "480p", value: "480p" },
-    { label: "360p", value: "360p" },
-  ];
-
   return (
     <ValidatedForm
       validator={streamingValidator}
