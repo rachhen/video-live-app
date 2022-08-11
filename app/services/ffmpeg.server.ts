@@ -1,5 +1,4 @@
 import ffmpeg from "fluent-ffmpeg";
-import { prisma } from "~/services/db.server";
 import type { Asset, Streaming, User } from "@prisma/client";
 import { directory } from "~/utils/file-upload.server";
 import { resolutionsMap } from "~/constants/resolutions";
@@ -63,7 +62,7 @@ export const createLiveStream = (streaming: QueueData): CreateLiveStream => {
           // });
           resolve(streaming);
         })
-        .once("progress", async function (progress) {
+        .on("progress", async function (progress) {
           console.log("Processing: " + progress.percent + "% done");
           // await prisma.streaming.update({
           //   where: { id: streaming.id },
