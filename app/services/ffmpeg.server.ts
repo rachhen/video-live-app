@@ -11,7 +11,7 @@ export type QueueData = Streaming & {
 
 type CreateLiveStream = {
   cmd: ffmpeg.FfmpegCommand;
-  runStreaming: () => Promise<Streaming>;
+  runStreaming: () => Promise<void>;
 };
 
 export const createLiveStream = (streaming: QueueData): CreateLiveStream => {
@@ -37,37 +37,14 @@ export const createLiveStream = (streaming: QueueData): CreateLiveStream => {
     .output(streaming.rtmps, { end: true });
 
   const runStreaming = () =>
-    new Promise<Streaming>((resolve, reject) => {
+    new Promise<void>((resolve, reject) => {
       cmd
-        .on("start", async function (commandLine) {
-          console.log("Spawned FFMPEG with command: " + commandLine);
-          // await prisma.streaming.update({
-          //   where: { id: streaming.id },
-          //   data: { status: "STARTED" },
-          // });
-        })
         .on("error", async function (err) {
-          // await prisma.streaming.update({
-          //   where: { id: streaming.id },
-          //   data: { status: "ERROR" },
-          // });
-          console.log(err);
           console.log("An error occurred: " + err.message);
           reject(err);
         })
         .on("end", async function () {
-          // const st = await prisma.streaming.update({
-          //   where: { id: streaming.id },
-          //   data: { status: "DONE" },
-          // });
-          resolve(streaming);
-        })
-        .on("progress", async function (progress) {
-          console.log("Processing: " + progress.percent + "% done");
-          // await prisma.streaming.update({
-          //   where: { id: streaming.id },
-          //   data: { status: "PROCESSING" },
-          // });
+          resolve();
         });
 
       cmd.run();

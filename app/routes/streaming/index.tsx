@@ -11,11 +11,13 @@ import {
   ActionIcon,
   Badge,
   Button,
+  Group,
   Pagination,
   Stack,
   Table,
+  Text,
 } from "@mantine/core";
-import { IconTrash } from "@tabler/icons";
+import { IconTrash, IconEye } from "@tabler/icons";
 import { validationError } from "remix-validated-form";
 
 import Streaming from "~/models/streaming.server";
@@ -69,16 +71,32 @@ function StreamingPage() {
             <tr key={item.id}>
               <td>{item.name}</td>
               <td>{loop(item.loop.toString())?.label}</td>
-              <td>{item.asset.name}</td>
+              <td width={250}>
+                <Text
+                  component={Link}
+                  variant="link"
+                  lineClamp={1}
+                  to={`/upload/${item.asset.id}`}
+                >
+                  {item.asset.name}
+                </Text>
+              </td>
               <td>
                 <Badge color={item.status ? "" : "red"}>{item.status}</Badge>
               </td>
               <td>{dateFormat(item.createdAt)}</td>
               <td>
-                <Stack>
-                  <Link to={`${item.id}`}>View</Link>
+                <Group>
                   <ActionIcon
-                    size="xs"
+                    component={Link}
+                    to={`${item.id}`}
+                    size="sm"
+                    color="blue"
+                  >
+                    <IconEye />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="sm"
                     color="red"
                     onClick={() => {
                       if (confirm("Are you sure?")) {
@@ -94,7 +112,7 @@ function StreamingPage() {
                   >
                     <IconTrash />
                   </ActionIcon>
-                </Stack>
+                </Group>
               </td>
             </tr>
           ))}

@@ -35,9 +35,9 @@ const findAll = async (userId: string, opts: Paginated) => {
   return { data, total };
 };
 
-export type StreamingFindOne = Prisma.PromiseReturnType<typeof findOne>;
+export type StreamingFindById = Prisma.PromiseReturnType<typeof findById>;
 
-const findOne = async (id: string) => {
+const findById = async (id: string) => {
   return prisma.streaming.findUnique({
     where: { id },
     include: { user: true, asset: true },
@@ -48,4 +48,4 @@ const deleteById = (id: string) => {
   return prisma.streaming.delete({ where: { id } });
 };
 
-export default { create, findAll, deleteById };
+export default { create, findAll, findById, deleteById };

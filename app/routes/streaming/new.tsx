@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({ request }) => {
     removeOnFail: true,
   });
 
-  return redirect("/streaming?created=true");
+  return redirect(`/streaming/${streaming.id}?created=true`);
 };
 
 function NewStreaming() {

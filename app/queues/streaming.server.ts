@@ -1,4 +1,5 @@
 import type Ffmpeg from "fluent-ffmpeg";
+import { prisma } from "~/services/db.server";
 import type { QueueData } from "~/services/ffmpeg.server";
 import { createLiveStream } from "~/services/ffmpeg.server";
 import { Queue } from "~/utils/queue.server";
@@ -14,6 +15,26 @@ export const streamingQueue = Queue<QueueData>(
   async (job) => {
     const { cmd, runStreaming } = createLiveStream(job.data);
 
+    cmd.on("progress", async function (progress) {
+      await job.updateProgress(progress.percent);
+      // console.log("Processing: " + progress.percent + "% done");
+    });
+
+    cmd.once("progress", async () => {
+      await prisma.streaming.update({
+        where: { id: job.data.id },
+        data: { status: "PROCESSING" },
+      });
+    });
+
+    cmd.once("end", async () => {
+      await prisma.streaming.update({
+        where: { id: job.data.id },
+        data: { status: "DONE" },
+      });
+      delete __runningLives[job.data.id];
+    });
+
     if (__runningLives[job.data.id]) {
       console.log("Streaming is already running");
       return;
@@ -25,11 +46,9 @@ export const streamingQueue = Queue<QueueData>(
   }
 );
 
-streamingQueue.on("removed", async (job) => {
-  console.log("removed", job.data.id);
-  const cmd = __runningLives[job.data.id];
-  if (cmd) {
-    cmd.kill("SIGKILL");
-    delete __runningLives[job.data.id];
+export const stopStreaming = (id: string) => {
+  if (global.__runningLives && global.__runningLives[id]) {
+    global.__runningLives[id].kill("SIGKILL");
+    delete global.__runningLives[id];
   }
-});
+};
