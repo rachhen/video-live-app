@@ -12,7 +12,7 @@ import { streamingQueue } from "~/queues/streaming.server";
 import { loops, resolutions } from "~/constants";
 
 export const meta: MetaFunction = () => ({
-  title: "Streaming",
+  title: "New Streaming",
   content: "Streaming",
   path: "/streaming",
 });
@@ -38,13 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 function NewStreaming() {
   return (
-    <ValidatedForm
-      validator={streamingValidator}
-      method="post"
-      defaultValues={{
-        rtmps: "rtmps://live-api-s.facebook.com:443/rtmp/",
-      }}
-    >
+    <ValidatedForm validator={streamingValidator} method="post">
       <Stack>
         <SelectFile name="videoId" />
         <FormInput name="name" label="Name" />
