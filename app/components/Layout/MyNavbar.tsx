@@ -1,12 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { createStyles, Navbar, Group, Code } from "@mantine/core";
-import {
-  IconLogout,
-  IconCloudUpload,
-  IconBroadcast,
-} from "@tabler/icons";
-import { MantineLogo } from "@mantine/ds";
+import { IconLogout, IconCloudUpload, IconBroadcast } from "@tabler/icons";
 import { NavLink, useFetcher } from "@remix-run/react";
+import Logo from "./Logo";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -112,8 +108,8 @@ export function MyNavbar() {
     <Navbar width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
-          <MantineLogo size={28} />
-          <Code sx={{ fontWeight: 700 }}>v0.0.1</Code>
+          <Logo />
+          <Code sx={{ fontWeight: 700 }}>v0.1.0</Code>
         </Group>
         {links}
       </Navbar.Section>
